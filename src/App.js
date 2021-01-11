@@ -235,25 +235,25 @@ function App() {
     }
   }, [svgRef]);
 
-  function getDates() {
-    let list = [];
-    for (let i = 1; i < 31; i++) {
-      list.push(new Date('01/' + i + '/2021').getTime());
-    }
-    console.log(list);
-  }
+  // function getDates() {
+  //   let list = [];
+  //   for (let i = 1; i < 31; i++) {
+  //     list.push(new Date('01/' + i + '/2021').getTime());
+  //   }
+  //   console.log(list);
+  // }
 
-  function getInterval() {
-    let list = [];
-    let magicNum = 1.639;
-    let current = 0;
+  // function getInterval() {
+  //   let list = [];
+  //   let magicNum = 1.639;
+  //   let current = 0;
 
-    for (let i = 1; i < 62; i++) {
-      list.push(current);
-      current += magicNum;
-    }
-    console.log(list);
-  }
+  //   for (let i = 1; i < 62; i++) {
+  //     list.push(current);
+  //     current += magicNum;
+  //   }
+  //   console.log(list);
+  // }
 
   return (
     <div className='app-wrapper'>
