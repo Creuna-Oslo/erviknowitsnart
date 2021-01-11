@@ -2,6 +2,8 @@ import React from 'react';
 import csvPath from './datagrunnlag.csv';
 import creunaLogo from './assets/creuna.png';
 import knowitLogo from './assets/knowit-experience.png';
+import { motion } from 'framer-motion';
+import CountUp from 'react-countup';
 
 const d3 = window.d3;
 
@@ -95,28 +97,34 @@ function App() {
           var x = d3
             .scaleTime()
             .domain(
-              d3.extent(data, function (d) {
-                return d.date;
+              d3.extent(data, function (d, i) {
+                if (i === 0 || i === data.length - 1) return d.date;
+                else if (d.label) return d.date;
               })
             )
             .range([0, width]);
+
           svg
             .append('g')
+            .attr('class', 'xAxis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3.axisBottom(x))
-            .selectAll('svg text')
-            .each(function (d) {
-              console.log(d.getTime());
-              if (d.getTime() === 1612134000000) {
-                d3.select(this).text('Vi er Knowit!');
-              }
-            });
+            .selectAll('svg text');
+          // .each(function (d, i) {
+          //   d3.select(this).text(d);
+          // });
+
+          data.forEach((_d) => {
+            if (_d.label) {
+            }
+          });
 
           // Add Y axis
           var y = d3.scaleLinear().domain([0, 100]).range([height, 0]);
           svg
             .append('g')
             .call(d3.axisLeft(y))
+            .attr('class', 'yAxis')
             .selectAll('svg text')
             .each(function (d) {
               d3.select(this).text(d + '%');
@@ -255,54 +263,54 @@ function App() {
   //   console.log(list);
   // }
 
+  // const creunaOpacity = 1 - percetageStatus / 100;
+  // const knowitOpacity = 0 + percetageStatus / 100;
+
   return (
     <div className='app-wrapper'>
       <h1>{currentDisplayText}</h1>
 
       <h2>
-        Vi er <b style={{ fontSize: '2em' }}>{percetageStatus}%</b> merget!
+        Vi er{' '}
+        <b style={{ fontSize: '2em' }}>
+          <CountUp
+            start={0}
+            end={percetageStatus}
+            duration={7}
+            useEasing={true}
+            separator=' '
+            suffix=' % '
+          />
+        </b>
+        merget!
       </h2>
       <h3>Neste milepæl er: {nextLandmark}</h3>
       <div className={'merge-companies-wrapper'}>
-        <img
-          style={{ opacity: percetageStatus / 100 }}
+        <motion.img
+          animate={{
+            left: `${percetageStatus / 2}%`,
+            // opacity: creunaOpacity,
+          }}
+          style={{
+            position: 'absolute',
+          }}
+          transition={{ duration: 5, ease: 'easeIn' }}
+          initial={{ left: 0, opacity: 1 }}
+          className={'mergeImg'}
           alt={'creuna-logo'}
           src={creunaLogo}
         />
-        {percetageStatus >= 100 ? (
-          <div>
-            <img
-              className={'mergeImg'}
-              style={{ left: `calc(${percetageStatus}% / 3 )` }}
-              alt={'creuna-logo'}
-              src={creunaLogo}
-            />
-            <img
-              className={'mergeImg'}
-              style={{ right: `calc(${percetageStatus}% / 3 )` }}
-              alt={'knowit-logo'}
-              src={knowitLogo}
-            />
-          </div>
-        ) : (
-          <>
-            <img
-              className={'mergeImg'}
-              style={{ left: `calc(${percetageStatus}% / 3 )` }}
-              alt={'creuna-logo'}
-              src={creunaLogo}
-            />
-            <img
-              className={'mergeImg'}
-              style={{ right: `calc(${percetageStatus}% / 3 )` }}
-              alt={'knowit-logo'}
-              src={knowitLogo}
-            />
-          </>
-        )}
-
-        <img
-          style={{ opacity: percetageStatus / 100 }}
+        <motion.img
+          animate={{
+            right: `${percetageStatus / 2}%`,
+            // opacity: knowitOpacity,
+          }}
+          style={{
+            position: 'absolute',
+          }}
+          transition={{ duration: 5, ease: 'easeIn' }}
+          initial={{ right: 0, opacity: 1 }}
+          className={'mergeImg'}
           alt={'knowit-logo'}
           src={knowitLogo}
         />
