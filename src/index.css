@@ -1,0 +1,142 @@
+:root {
+  --color-1: #f0f;
+  --color-2: #f2f2f2;
+  --color-3: #04bfad;
+  --color-4: #fcdfd8;
+  --color-5: #04bfad;
+  --background-color: rgba(128, 156, 133, 0.5);
+  --color-black: #0f0f0f;
+  --color-white: #f0f0f0;
+  --font: Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+body {
+  background: rgba(128, 156, 133, 0.5);
+}
+
+/* svg,
+line,
+p,
+a,
+h1,
+h2,
+footer,
+path {
+  stroke: var(--color-white);
+  color: var(--color-white);
+} */
+
+#my_dataviz .currentTimeCircle {
+  stroke: var(--color-1);
+  fill: --color-black;
+  stroke-width: 10px;
+}
+
+#my_dataviz .marker {
+  stroke: var(--color-1);
+  fill: var(--color-1);
+  stroke-width: 4px;
+}
+
+#my_dataviz .weekendCircle {
+  stroke: var(--color-5);
+  fill: var(--color-5);
+  stroke-width: 2px;
+}
+
+#my_dataviz path {
+  stroke: #dbeede;
+  stroke-width: 10px;
+}
+
+#my_dataviz .labelLine {
+  stroke: var(--color-4);
+  stroke-width: 5px;
+}
+
+/* Styling labels on the x and y axis */
+#my_dataviz g.tick text {
+  font-size: 20px;
+}
+/* Styling lines on the x and y axis */
+#my_dataviz g.tick line {
+  width: 20px;
+  stroke-width: 20px;
+  stroke: var(--color-5);
+}
+
+#my_dataviz .centerLine {
+  stroke: var(--color-5);
+  stroke-width: 5px;
+}
+
+#my_dataviz .myLabel {
+  stroke: var(--color-1);
+  fill: var(--color-1);
+  font-weight: 400;
+  text-anchor: left;
+  font-size: 14px;
+  z-index: 20;
+}
+#my_dataviz {
+  width: 100%;
+}
+
+.app-wrapper {
+  width: 100vw;
+  padding: 2vh 10vw;
+}
+@media only screen and (max-width: 600px) {
+  .app-wrapper {
+    padding: 2vh;
+  }
+}
+a {
+  color: var(--color-1);
+  font-weight: bold;
+}
+
+h1,
+h2 {
+  font-weight: normal;
+}
+
+h1 {
+  font-size: 3em;
+}
+h2 {
+  font-size: 1em;
+}
+
+footer {
+  margin: 2em 0;
+}
+
+.merge-companies-wrapper {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.merge-companies-wrapper .mergeImg {
+  position: absolute;
+}
