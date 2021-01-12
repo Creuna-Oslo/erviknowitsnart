@@ -4,6 +4,7 @@ import creunaLogo from './assets/creuna.png';
 import knowitLogo from './assets/knowit-experience.png';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
+import useMouse from '@react-hook/mouse-position';
 
 const d3 = window.d3;
 
@@ -28,7 +29,13 @@ function App() {
   const [currentDisplayText, setCurrentDisplayText] = React.useState('');
   const [percetageStatus, setPercentageStatus] = React.useState('');
   const [nextLandmark, setNextLandmark] = React.useState('');
+  const [tip, setTip] = React.useState(null);
   const svgRef = React.useRef();
+  const mousePosRef = React.useRef(null);
+  const mouse = useMouse(mousePosRef, {
+    enterDelay: 100,
+    leaveDelay: 100,
+  });
 
   const isSameDay = (date, compareDate) => {
     const currentDay = date.getDate();
@@ -49,7 +56,7 @@ function App() {
     );
 
     document.title = `🌟 Vi er Knowit om ${timeleft} dager!`;
-    setCurrentDisplayText(`Vi er Knowit om ${timeleft} dager! 🌟 `);
+    setCurrentDisplayText(timeleft);
   }
 
   React.useEffect(() => {
@@ -63,7 +70,7 @@ function App() {
     if (svgParent) {
       const parentWidth = svgParent.offsetWidth;
       // set the dimensions and margins of the graph
-      const margin = { top: 50, right: 100, bottom: 50, left: 70 },
+      const margin = { top: 50, right: 100, bottom: 100, left: 70 },
         width = parentWidth - margin.left - margin.right,
         height = 800 - margin.top - margin.bottom;
 
@@ -98,8 +105,8 @@ function App() {
             .scaleTime()
             .domain(
               d3.extent(data, function (d, i) {
-                if (i === 0 || i === data.length - 1) return d.date;
-                else if (d.label) return d.date;
+                // if (i === 0 || i === data.length - 1) return d.date;
+                return d.date;
               })
             )
             .range([0, width]);
@@ -108,7 +115,10 @@ function App() {
             .append('g')
             .attr('class', 'xAxis')
             .attr('transform', 'translate(0,' + height + ')')
-            .call(d3.axisBottom(x))
+            .call(
+              d3.axisBottom(x).ticks(18, d3.timeFormat('%d %b'))
+              // .tickValues(d3.range(0, data.length, 4))
+            )
             .selectAll('svg text');
           // .each(function (d, i) {
           //   d3.select(this).text(d);
@@ -175,9 +185,50 @@ function App() {
                   return y(d.value);
                 })
                 .attr('r', 4)
-                .attr('stroke', 'pink')
-                .attr('stroke-width', 3)
-                .attr('fill', 'white');
+                .attr('stroke', '#f0f')
+                .attr('stroke-width', 4)
+                .attr('fill', '#f0f')
+
+                .on('mouseover', function (d) {
+                  setTip(d);
+                  // d3.select(this).transition().duration(1000).attr('r', 100);
+                  // tip.show(d);
+                })
+
+                .on('mouseout', function (d) {
+                  setTip(null);
+                  // d3.select(this)
+                  // .transition()
+                  // .duration(1000)
+                  // .attr('r', 4)
+                  // .attr('stroke', '#f0f')
+                  // .attr('stroke-width', 4)
+                  // .attr('fill', '#f0f');
+                });
+            } else {
+              svg
+                .append('g')
+                .selectAll('dot')
+                .data([_d])
+                .enter()
+                .append('circle')
+                .attr('cx', function (d) {
+                  return x(d.date);
+                })
+                .attr('cy', function (d) {
+                  return y(d.value);
+                })
+                .attr('r', 4)
+                .attr('stroke', 'transparent')
+                .attr('stroke-width', 4)
+                .attr('fill', 'transparent')
+                .on('mouseover', function (d) {
+                  setTip(d);
+                })
+
+                .on('mouseout', function (d) {
+                  setTip(null);
+                });
             }
           });
 
@@ -265,14 +316,50 @@ function App() {
 
   // const creunaOpacity = 1 - percetageStatus / 100;
   // const knowitOpacity = 0 + percetageStatus / 100;
+  function getFormattedDate(date) {
+    var year = date.getFullYear();
+    const monthNames = [
+      'Januar',
+      'Februar',
+      'Mars',
+      'April',
+      'Mai',
+      'Juni',
+      'Juli',
+      'August',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+    var month = monthNames[date.getMonth()];
 
+    var day = date.getDate().toString();
+    day = day.length > 1 ? day : '0' + day;
+
+    return day + '. ' + month + ' ' + year;
+  }
   return (
-    <div className='app-wrapper'>
-      <h1>{currentDisplayText}</h1>
-
+    <div className='app-wrapper' ref={mousePosRef}>
+      {tip && (
+        <div
+          className={'tip'}
+          style={{
+            top: mouse.y + 20,
+            left: mouse.x + 20,
+          }}
+        >
+          <b>{tip.valueNum.toFixed(0) + ' %'}</b>
+          <p>{getFormattedDate(new Date(tip.date))}</p>
+        </div>
+      )}
+      <h1>
+        Vi er Knowit om{' '}
+        <span className={'pink'}>{currentDisplayText} dager!</span> 🌟{' '}
+      </h1>
       <h2>
         Vi er{' '}
-        <b style={{ fontSize: '2em' }}>
+        <b className={'pink'} style={{ fontSize: '2em' }}>
           <CountUp
             start={0}
             end={percetageStatus}
@@ -284,7 +371,9 @@ function App() {
         </b>
         merget!
       </h2>
-      <h3>Neste milepæl er: {nextLandmark}</h3>
+      <h3>
+        Neste milepæl er: <span className={'pink'}>{nextLandmark}</span>
+      </h3>
       <div className={'merge-companies-wrapper'}>
         <motion.img
           animate={{
