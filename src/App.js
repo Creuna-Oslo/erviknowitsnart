@@ -142,7 +142,7 @@ function App() {
             });
 
           data.forEach((_d, i) => {
-            if (_d.label && i) {
+            if (_d.label && i && _d.shortLabel !== 'invisible') {
               // Linjen for label
               svg
                 .append('line')
@@ -173,7 +173,7 @@ function App() {
             );
 
           data.forEach((_d) => {
-            if (_d.label) {
+            if (_d.label && _d.shortLabel !== 'invisible') {
               // Dott på krysningspunkt for label
               svg
                 .append('g')
@@ -221,7 +221,6 @@ function App() {
                 .on('mouseover', function (d) {
                   setTip(d);
                 })
-
                 .on('mouseout', function (d) {
                   setTip(null);
                 });
@@ -230,7 +229,7 @@ function App() {
 
           // Added after to appear above all lines
           data.forEach((_d) => {
-            if (_d.label && _d.shortLabel) {
+            if (_d.label && _d.shortLabel && _d.shortLabel !== 'invisible') {
               // Label for label
               svg
                 .append('text')
@@ -266,7 +265,6 @@ function App() {
           setNextLandmark(_nextLandmark);
 
           if (current) {
-            console.log(current);
             svg
               .append('g')
               .selectAll('dot')
@@ -286,7 +284,10 @@ function App() {
               .attr('fill', 'white')
               .attr('content', `${current.valueNum}`)
               .on('mouseover', function (d) {
-                setTip(d);
+                setTip({
+                  ...d,
+                  label: 'Dagens dato! 🧠',
+                });
               })
 
               .on('mouseout', function (d) {
@@ -431,7 +432,7 @@ function App() {
             {': '}
             {tip.valueNum.toFixed(0) + ' % fusjonert'}
           </b>
-          <p>{tip.label}</p>
+          <p style={{ marginBottom: 0 }}>{tip.label}</p>
         </div>
       )}
       <h1>
