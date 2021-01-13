@@ -1,8 +1,5 @@
 import React from 'react';
 import csvPath from './datagrunnlag.csv';
-import creunaLogo from './assets/creuna.png';
-import knowitLogo from './assets/knowit-experience.png';
-import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
 import useMouse from '@react-hook/mouse-position';
 
@@ -458,7 +455,7 @@ function App() {
       <h3>
         Neste milepæl er: <span className={'pink'}>{nextLandmark}</span>
       </h3>
-      <div className={'merge-companies-wrapper'}>
+      {/* <div className={'merge-companies-wrapper'}>
         <motion.img
           animate={{
             left: `${percetageStatus / 2}%`,
@@ -487,7 +484,7 @@ function App() {
           alt={'knowit-logo'}
           src={knowitLogo}
         />
-      </div>
+      </div> */}
 
       <div ref={svgRef} id='my_dataviz' />
 
