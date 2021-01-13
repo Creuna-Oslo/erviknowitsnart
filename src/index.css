@@ -87,7 +87,6 @@ path {
 }
 
 #my_dataviz .myLabel {
-  stroke: var(--color-1);
   fill: var(--color-1);
   font-weight: 400;
   text-anchor: left;

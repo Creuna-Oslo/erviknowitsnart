@@ -24,6 +24,7 @@ Det er helg!/Peak helg begynner fredag 1500
 //   5: "Fredag",
 //   6: "Lørdag",
 // }
+var one_day = 1000 * 60 * 60 * 24;
 
 function App() {
   const [currentDisplayText, setCurrentDisplayText] = React.useState('');
@@ -39,18 +40,20 @@ function App() {
 
   const isSameDay = (date, compareDate) => {
     const currentDay = date.getDate();
+    const currentMonth = date.getMonth();
     const _day = new Date(compareDate).getDate();
+    const _month = new Date(compareDate).getMonth();
+    console.log({ date, compareDate, currentDay, _day });
 
-    return currentDay === _day;
+    return currentDay === _day && currentMonth === _month;
   };
 
   function getDaysLeftToKnowit() {
     const today = new Date();
-    const vierknowit = new Date(today.getFullYear(), 1, 1);
+    const vierknowit = new Date(today.getFullYear(), 1, 18);
     if (today.getMonth() > 1 && today.getDate() > 1) {
       vierknowit.setFullYear(vierknowit.getFullYear() + 1);
     }
-    var one_day = 1000 * 60 * 60 * 24;
     const timeleft = Math.ceil(
       (vierknowit.getTime() - today.getTime()) / one_day
     );
@@ -95,6 +98,7 @@ function App() {
             valueNum: Number(d.value),
             dateMS: d.dateMS,
             label: d.label,
+            shortLabel: d.shortLabel,
           };
         },
 
@@ -140,6 +144,18 @@ function App() {
               d3.select(this).text(d + '%');
             });
 
+          data.forEach((_d, i) => {
+            if (_d.label && i) {
+              // Linjen for label
+              svg
+                .append('line')
+                .attr('x1', x(_d.dateMS))
+                .attr('y1', 0)
+                .attr('x2', x(_d.dateMS))
+                .attr('y2', height)
+                .attr('class', 'labelLine');
+            }
+          });
           // Add the line
           svg
             .append('path')
@@ -150,7 +166,7 @@ function App() {
               'd',
               d3
                 .line()
-                .curve(d3.curveBasis) // Just add that to have a curve instead of segments
+                .curve(d3.curveNatural) // Just add that to have a curve instead of segments
                 .x(function (d) {
                   return x(d.date);
                 })
@@ -161,15 +177,6 @@ function App() {
 
           data.forEach((_d) => {
             if (_d.label) {
-              // Linjen for label
-              svg
-                .append('line')
-                .attr('x1', x(_d.dateMS))
-                .attr('y1', 0)
-                .attr('x2', x(_d.dateMS))
-                .attr('y2', height)
-                .attr('class', 'labelLine');
-
               // Dott på krysningspunkt for label
               svg
                 .append('g')
@@ -184,26 +191,18 @@ function App() {
                 .attr('cy', function (d) {
                   return y(d.value);
                 })
-                .attr('r', 4)
+                .attr('r', 0)
                 .attr('stroke', '#f0f')
-                .attr('stroke-width', 4)
+                .attr('stroke-width', 0)
                 .attr('fill', '#f0f')
+                .attr('class', 'pink_dot')
 
                 .on('mouseover', function (d) {
                   setTip(d);
-                  // d3.select(this).transition().duration(1000).attr('r', 100);
-                  // tip.show(d);
                 })
 
                 .on('mouseout', function (d) {
                   setTip(null);
-                  // d3.select(this)
-                  // .transition()
-                  // .duration(1000)
-                  // .attr('r', 4)
-                  // .attr('stroke', '#f0f')
-                  // .attr('stroke-width', 4)
-                  // .attr('fill', '#f0f');
                 });
             } else {
               svg
@@ -234,14 +233,15 @@ function App() {
 
           // Added after to appear above all lines
           data.forEach((_d) => {
-            if (_d.label) {
+            if (_d.label && _d.shortLabel) {
               // Label for label
               svg
                 .append('text')
                 .attr('y', y(_d.value - 3)) //magic number here
                 .attr('x', x(_d.dateMS))
+                .attr('opacity', 0)
                 .attr('class', 'myLabel') //easy to style with CSS
-                .text(_d.label);
+                .text(_d.shortLabel);
             }
           });
 
@@ -287,20 +287,40 @@ function App() {
               .attr('stroke', '#69b3a2')
               .attr('stroke-width', 3)
               .attr('fill', 'white')
-              .attr('content', `${current.valueNum}`);
+              .attr('content', `${current.valueNum}`)
+              .on('mouseover', function (d) {
+                setTip(d);
+              })
+
+              .on('mouseout', function (d) {
+                setTip(null);
+              });
           }
+          // Animation
+          svg
+            .selectAll('.pink_dot')
+            .transition()
+            .duration(800)
+            .attr('r', 4)
+            .attr('stroke-width', 4)
+            .delay(function (d, i) {
+              console.log(i);
+              return i * 300;
+            });
+
+          svg
+            .selectAll('.myLabel')
+            .transition()
+            .duration(800)
+            .attr('opacity', 1)
+            .delay(function (d, i) {
+              console.log(i);
+              return (i + 0.3) * 300;
+            });
         }
       );
     }
   }, [svgRef]);
-
-  // function getDates() {
-  //   let list = [];
-  //   for (let i = 1; i < 31; i++) {
-  //     list.push(new Date('01/' + i + '/2021').getTime());
-  //   }
-  //   console.log(list);
-  // }
 
   // function getInterval() {
   //   let list = [];
@@ -313,6 +333,66 @@ function App() {
   //   }
   //   console.log(list);
   // }
+
+  // function createData() {
+  //   let data = [];
+  //   let current = 0;
+  //   const intervalDays = 120;
+  //   const magicNum = 0.59;
+
+  //   for (
+  //     var d = new Date(2020, 9, 22);
+  //     d <= new Date(2021, 1, 18);
+  //     d.setDate(d.getDate() + 1)
+  //   ) {
+  //     const obj = {
+  //       dateMS: undefined,
+  //       label: undefined,
+  //       value: undefined,
+  //     };
+
+  //     const day = d.getDate();
+  //     const month = d.getMonth();
+
+  //     if (month === 9) {
+  //       if (day === 22)
+  //         obj.label = 'Nyheten om at Knowit kjøper Creuna publiseres';
+  //     } else if (month === 10) {
+  //       if (day === 19) obj.label = 'Konkurransetilsynet godkjenner oppkjøpet';
+  //     } else if (month === 11) {
+  //       if (day === 1) obj.label = 'KXO overtar Creuna';
+  //     } else if (month === 0) {
+  //       if (day === 1) obj.label = 'Felles Unit 4 / UBW';
+  //       else if (day === 4) obj.label = 'Vi deler lokaler på Skøyen';
+  //       else if (day === 18)
+  //         obj.label =
+  //           'Styrene i Creuna og KXO beslutter org. struktur og felles vilkår';
+  //       else if (day === 20)
+  //         obj.label = 'Ombygging av felles kontor ferdigstilt';
+  //     } else if (month === 1) {
+  //       if (day === 1)
+  //         obj.label =
+  //           'Ny felles organisering for folk og fag legges frem for ansatte';
+  //       else if (day === 3)
+  //         obj.label = 'Felles salgspresentasjon klar for bruk';
+  //       else if (day === 5)
+  //         obj.label = 'Felles nettside og digitale kommunikasjonskanaler';
+  //       else if (day === 18)
+  //         obj.label =
+  //           'Creuna og Knowit er fusjonert!! (Knowit e-post, signatur, nye arbeidskontrakter etc)';
+  //     }
+
+  //     obj.value = current;
+  //     current += obj.label ? magicNum + 3 : magicNum;
+
+  //     obj.dateMS = new Date(d).getTime();
+
+  //     data.push(obj);
+  //   }
+  //   console.log(JSON.stringify(data));
+  // }
+
+  // createData();
 
   // const creunaOpacity = 1 - percetageStatus / 100;
   // const knowitOpacity = 0 + percetageStatus / 100;
@@ -349,8 +429,12 @@ function App() {
             left: mouse.x + 20,
           }}
         >
-          <b>{tip.valueNum.toFixed(0) + ' %'}</b>
-          <p>{getFormattedDate(new Date(tip.date))}</p>
+          <b>
+            {getFormattedDate(new Date(tip.date))}
+            {': '}
+            {tip.valueNum.toFixed(0) + ' % fusjonert'}
+          </b>
+          <p>{tip.label}</p>
         </div>
       )}
       <h1>
@@ -369,7 +453,7 @@ function App() {
             suffix=' % '
           />
         </b>
-        merget!
+        fusjonert!
       </h2>
       <h3>
         Neste milepæl er: <span className={'pink'}>{nextLandmark}</span>
