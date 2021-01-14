@@ -466,13 +466,12 @@ function App() {
   const animSize = maxImgSize - percetageStatus * 2;
 
   const imgStyle = {
-    position: 'absolute',
-    top: 50,
-    left: 50,
-    boxSizing: 'border-box',
-    display: 'block',
     width: animSize,
     height: animSize,
+    display: 'block',
+    position: 'absolute',
+    left: `calc(50% - ${animSize / 2}px)`,
+    top: `calc(50% - ${animSize / 2}px)`,
   };
 
   const tipWithSticky = { ...tip, ...stickyTip };
@@ -525,12 +524,15 @@ function App() {
             position: 'relative',
             width: maxImgSize,
             height: maxImgSize,
+            borderRadius: '100%',
+            border: '8px solid #dbeede',
           }}
         >
           <motion.span
             animate={{
               rotate: 360,
             }}
+            className={'rotating-img'}
             style={imgStyle}
             transition={imgTrans}
           >
@@ -548,6 +550,7 @@ function App() {
             animate={{
               rotate: -360,
             }}
+            className={'rotating-img'}
             style={imgStyle}
             transition={imgTrans}
           >
