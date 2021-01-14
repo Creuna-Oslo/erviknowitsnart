@@ -2,7 +2,9 @@ import React from 'react';
 import csvPath from './datagrunnlag.csv';
 import CountUp from 'react-countup';
 import useMouse from '@react-hook/mouse-position';
-
+import { motion } from 'framer-motion';
+import creunaLogo from './assets/creuna.png';
+import knowitLogo from './assets/knowit-experience.png';
 const d3 = window.d3;
 
 /**
@@ -455,6 +457,24 @@ function App() {
     return day + '. ' + month + ' ' + year;
   }
 
+  const imgTrans = {
+    duration: 5,
+    ease: 'linear',
+    loop: Infinity,
+  };
+  const maxImgSize = 300;
+  const animSize = maxImgSize - percetageStatus * 2;
+
+  const imgStyle = {
+    position: 'absolute',
+    top: 50,
+    left: 50,
+    boxSizing: 'border-box',
+    display: 'block',
+    width: animSize,
+    height: animSize,
+  };
+
   const tipWithSticky = { ...tip, ...stickyTip };
   return (
     <div className='app-wrapper' ref={mousePosRef}>
@@ -474,58 +494,75 @@ function App() {
           <p style={{ marginBottom: 0 }}>{tipWithSticky.label}</p>
         </div>
       )}
-      <h1>
-        Vi er ett om <span className={'pink'}>{currentDisplayText} dager!</span>{' '}
-        🌟{' '}
-      </h1>
-      <h2>
-        Vi er{' '}
-        <b className={'pink'} style={{ fontSize: '2em' }}>
-          <CountUp
-            start={0}
-            end={percetageStatus}
-            duration={7}
-            useEasing={true}
-            separator=' '
-            suffix=' % '
-          />
-        </b>
-        fusjonert!
-      </h2>
-      <h3>
-        Neste milepæl er: <span className={'pink'}>{nextLandmark}</span>
-      </h3>
-      {/* <div className={'merge-companies-wrapper'}>
-        <motion.img
-          animate={{
-            left: `${percetageStatus / 2}%`,
-            // opacity: creunaOpacity,
-          }}
-          style={{
-            position: 'absolute',
-          }}
-          transition={{ duration: 5, ease: 'easeIn' }}
-          initial={{ left: 0, opacity: 1 }}
-          className={'mergeImg'}
-          alt={'creuna-logo'}
-          src={creunaLogo}
-        />
-        <motion.img
-          animate={{
-            right: `${percetageStatus / 2}%`,
-            // opacity: knowitOpacity,
-          }}
-          style={{
-            position: 'absolute',
-          }}
-          transition={{ duration: 5, ease: 'easeIn' }}
-          initial={{ right: 0, opacity: 1 }}
-          className={'mergeImg'}
-          alt={'knowit-logo'}
-          src={knowitLogo}
-        />
-      </div> */}
 
+      <div className={'content-logo-wrapper'}>
+        <div className={'content-wrapper'}>
+          <h1>
+            Vi er ett om{' '}
+            <span className={'pink'}>{currentDisplayText} dager!</span> 🌟{' '}
+          </h1>
+          <h2>
+            Vi er{' '}
+            <b className={'pink'} style={{ fontSize: '2em' }}>
+              <CountUp
+                start={0}
+                end={percetageStatus}
+                duration={7}
+                useEasing={true}
+                separator=' '
+                suffix=' % '
+              />
+            </b>
+            fusjonert!
+          </h2>
+          <h3>
+            Neste milepæl er: <span className={'pink'}>{nextLandmark}</span>
+          </h3>
+        </div>
+
+        <div
+          style={{
+            position: 'relative',
+            width: maxImgSize,
+            height: maxImgSize,
+          }}
+        >
+          <motion.span
+            animate={{
+              rotate: 360,
+            }}
+            style={imgStyle}
+            transition={imgTrans}
+          >
+            <motion.img
+              style={{
+                width: maxImgSize / 3,
+                height: maxImgSize / 3,
+              }}
+              className={'mergeImg'}
+              alt={'creuna-logo'}
+              src={creunaLogo}
+            />
+          </motion.span>
+          <motion.span
+            animate={{
+              rotate: -360,
+            }}
+            style={imgStyle}
+            transition={imgTrans}
+          >
+            <motion.img
+              style={{
+                width: maxImgSize / 3,
+                height: maxImgSize / 3,
+              }}
+              className={'mergeImg'}
+              alt={'knowit-logo'}
+              src={knowitLogo}
+            />
+          </motion.span>
+        </div>
+      </div>
       <div ref={svgRef} id='my_dataviz' />
 
       <footer>
