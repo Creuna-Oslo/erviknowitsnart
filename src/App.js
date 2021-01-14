@@ -28,6 +28,7 @@ function App() {
   const [percetageStatus, setPercentageStatus] = React.useState('');
   const [nextLandmark, setNextLandmark] = React.useState('');
   const [tip, setTip] = React.useState(null);
+  const [stickyTip, setStickyTip] = React.useState(null);
   const svgRef = React.useRef();
   const mousePosRef = React.useRef(null);
   const mouse = useMouse(mousePosRef, {
@@ -45,6 +46,14 @@ function App() {
     return currentDay === _day && currentMonth === _month;
   };
 
+  React.useEffect(() => {
+    if (stickyTip) {
+      setTimeout(() => {
+        setStickyTip(null);
+      }, 4000);
+    }
+  }, [stickyTip]);
+
   function getDaysLeftToKnowit() {
     const today = new Date();
     const vierknowit = new Date(today.getFullYear(), 1, 18);
@@ -55,7 +64,7 @@ function App() {
       (vierknowit.getTime() - today.getTime()) / one_day
     );
 
-    document.title = `🌟 Vi er Knowit om ${timeleft} dager!`;
+    document.title = `🌟 Vi er ett om ${timeleft} dager!`;
     setCurrentDisplayText(timeleft);
   }
 
@@ -70,9 +79,9 @@ function App() {
     if (svgParent) {
       const parentWidth = svgParent.offsetWidth;
       // set the dimensions and margins of the graph
-      const margin = { top: 50, right: 100, bottom: 100, left: 70 },
+      const margin = { top: 50, right: 50, bottom: 100, left: 50 },
         width = parentWidth - margin.left - margin.right,
-        height = 800 - margin.top - margin.bottom;
+        height = 600 - margin.top - margin.bottom;
 
       // append the svg object to the body of the page
       var svg = d3
@@ -172,7 +181,7 @@ function App() {
                 })
             );
 
-          data.forEach((_d) => {
+          data.forEach((_d, i) => {
             if (_d.label && _d.shortLabel !== 'invisible') {
               // Dott på krysningspunkt for label
               svg
@@ -181,7 +190,6 @@ function App() {
                 .data([_d])
                 .enter()
                 .append('circle')
-                .attr('class', 'marker')
                 .attr('cx', function (d) {
                   return x(d.date);
                 })
@@ -192,12 +200,14 @@ function App() {
                 .attr('stroke', '#f0f')
                 .attr('stroke-width', 0)
                 .attr('fill', '#f0f')
-                .attr('class', 'pink_dot')
+                .attr('class', data.length - 1 === i ? 'final_dot' : 'pink_dot')
 
                 .on('mouseover', function (d) {
                   setTip(d);
                 })
-
+                .on('click', function (d) {
+                  setStickyTip((s) => (s ? null : d));
+                })
                 .on('mouseout', function (d) {
                   setTip(null);
                 });
@@ -221,6 +231,9 @@ function App() {
                 .on('mouseover', function (d) {
                   setTip(d);
                 })
+                .on('click', function (d) {
+                  setStickyTip((s) => (s ? null : d));
+                })
                 .on('mouseout', function (d) {
                   setTip(null);
                 });
@@ -233,7 +246,7 @@ function App() {
               // Label for label
               svg
                 .append('text')
-                .attr('y', y(_d.value - 3)) //magic number here
+                .attr('y', y(_d.value - 4)) //magic number here
                 .attr('x', x(_d.dateMS))
                 .attr('opacity', 0)
                 .attr('class', 'myLabel') //easy to style with CSS
@@ -289,14 +302,24 @@ function App() {
                   label: 'Dagens dato! 🧠',
                 });
               })
-
+              .on('click', function (d) {
+                setStickyTip((s) =>
+                  s
+                    ? null
+                    : {
+                        ...d,
+                        label: 'Dagens dato! 🧠',
+                      }
+                );
+              })
               .on('mouseout', function (d) {
                 setTip(null);
               });
           }
+
           // Animation
-          svg
-            .selectAll('.pink_dot')
+          const pinkDot = svg.selectAll('.pink_dot');
+          pinkDot
             .transition()
             .duration(800)
             .attr('r', 4)
@@ -304,6 +327,19 @@ function App() {
             .delay(function (d, i) {
               console.log(i);
               return i * 300;
+            });
+          // Animation
+          svg
+            .selectAll('.final_dot')
+            .transition()
+            .duration(800)
+            .attr('r', 12)
+            .attr('stroke', 'gold')
+            .attr('fill', 'gold')
+            .attr('stroke-width', 8)
+            .delay(function (d, i) {
+              console.log(i);
+              return (data.filter((f) => f.label).length - 1) * 300;
             });
 
           svg
@@ -315,6 +351,7 @@ function App() {
               console.log(i);
               return (i + 0.3) * 300;
             });
+          svg.selectAll('circle').attr('cursor', 'pointer');
         }
       );
     }
@@ -417,27 +454,29 @@ function App() {
 
     return day + '. ' + month + ' ' + year;
   }
+
+  const tipWithSticky = { ...tip, ...stickyTip };
   return (
     <div className='app-wrapper' ref={mousePosRef}>
-      {tip && (
+      {tipWithSticky?.value && (
         <div
           className={'tip'}
           style={{
-            top: mouse.y + 20,
-            left: mouse.x + 20,
+            top: mouse.y + 10,
+            left: mouse.x + (tipWithSticky.value > 50 ? -280 : 10),
           }}
         >
           <b>
-            {getFormattedDate(new Date(tip.date))}
+            {getFormattedDate(new Date(tipWithSticky.date))}
             {': '}
-            {tip.valueNum.toFixed(0) + ' % fusjonert'}
+            {tipWithSticky.valueNum.toFixed(0) + ' % fusjonert'}
           </b>
-          <p style={{ marginBottom: 0 }}>{tip.label}</p>
+          <p style={{ marginBottom: 0 }}>{tipWithSticky.label}</p>
         </div>
       )}
       <h1>
-        Vi er Knowit om{' '}
-        <span className={'pink'}>{currentDisplayText} dager!</span> 🌟{' '}
+        Vi er ett om <span className={'pink'}>{currentDisplayText} dager!</span>{' '}
+        🌟{' '}
       </h1>
       <h2>
         Vi er{' '}
@@ -490,7 +529,7 @@ function App() {
       <div ref={svgRef} id='my_dataviz' />
 
       <footer>
-        Du kan bli med å utvide prosjektet! Ta kontakt med{' '}
+        For spørsmål angående denne løsningen, ta kontakt med{' '}
         <a href='mailto:jl.hansen@creuna.no'>Jørgen Lybeck Hansen</a>
       </footer>
     </div>

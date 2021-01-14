@@ -129,7 +129,8 @@ path {
 }
 @media only screen and (max-width: 600px) {
   .app-wrapper {
-    padding: 2vh;
+    padding: 2vh -20vw;
+    width: 120vw;
   }
 }
 a {
