@@ -24,10 +24,10 @@ Det er helg!/Peak helg begynner fredag 1500
 //   6: "Lørdag",
 // }
 var one_day = 1000 * 60 * 60 * 24;
+const percentageStatus = 100;
 
 function App() {
   const [currentDisplayText, setCurrentDisplayText] = React.useState('');
-  const [percetageStatus, setPercentageStatus] = React.useState('');
   const [nextLandmark, setNextLandmark] = React.useState('');
   const [tip, setTip] = React.useState(null);
   const [stickyTip, setStickyTip] = React.useState(null);
@@ -274,7 +274,6 @@ function App() {
 
             if (isSameDay(currentDate, point.date)) {
               current = point;
-              setPercentageStatus(point.valueNum.toFixed(0));
             }
           });
           setNextLandmark(_nextLandmark);
@@ -463,7 +462,7 @@ function App() {
     loop: Infinity,
   };
   const maxImgSize = 300;
-  const animSize = maxImgSize - percetageStatus * 2;
+  const animSize = maxImgSize - percentageStatus * 2;
 
   const imgStyle = {
     width: animSize,
@@ -508,7 +507,7 @@ function App() {
             <b className={'pink'} style={{ fontSize: '2em' }}>
               <CountUp
                 start={0}
-                end={100}
+                end={percentageStatus}
                 duration={7}
                 useEasing={true}
                 separator=' '
