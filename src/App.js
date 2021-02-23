@@ -497,7 +497,7 @@ function App() {
       <div className={'content-logo-wrapper'}>
         <div className={'content-wrapper'}>
           <h1>
-            Vi er ett for
+            Vi ble ett for{' '}
             <span className={'pink'}>
               {Math.abs(currentDisplayText)} dager siden!
             </span>{' '}
