@@ -497,15 +497,18 @@ function App() {
       <div className={'content-logo-wrapper'}>
         <div className={'content-wrapper'}>
           <h1>
-            Vi er ett om{' '}
-            <span className={'pink'}>{currentDisplayText} dager!</span> 🌟{' '}
+            Vi er ett for
+            <span className={'pink'}>
+              {Math.abs(currentDisplayText)} dager siden!
+            </span>{' '}
+            🌟{' '}
           </h1>
           <h2>
             Vi er{' '}
             <b className={'pink'} style={{ fontSize: '2em' }}>
               <CountUp
                 start={0}
-                end={percetageStatus}
+                end={100}
                 duration={7}
                 useEasing={true}
                 separator=' '
