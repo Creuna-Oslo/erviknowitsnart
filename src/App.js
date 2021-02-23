@@ -517,7 +517,8 @@ function App() {
             fusjonert!
           </h2>
           <h3>
-            Neste milepæl er: <span className={'pink'}>{nextLandmark}</span>
+            Neste milepæl er{' '}
+            <span className={'pink'}>å bli enda bedre kjent!</span>
           </h3>
         </div>
 
